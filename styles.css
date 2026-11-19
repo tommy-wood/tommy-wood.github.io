@@ -197,6 +197,7 @@ em { font-style: normal; color: var(--accent); }
 .option__meta span::before { content: ""; width: 5px; height: 5px; background: var(--accent); transform: rotate(45deg); }
 .option > p:not(.option__meta) { color: var(--muted); font-size: .97rem; flex: 1; margin-bottom: 2rem; }
 .option .btn { align-self: flex-start; }
+.option__note { margin: .9rem 0 0; font-size: .82rem; color: var(--muted); }
 
 /* Booking modal */
 .modal { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 24px; }
