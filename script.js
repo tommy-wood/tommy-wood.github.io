@@ -6,6 +6,10 @@
      so the embed works (open the short link and copy the URL).
    - Calendly also works: https://calendly.com/tommywoodpt/1to1session
    ========================================================= */
+/* Free 15-min consultation: paste its Google booking link here.
+   Until it's set, the "Book free call" button opens WhatsApp. */
+const CONSULT_URL = "";
+
 const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0qwG0DC8gNyS6GFDqcdaDojAPX5_0mNBzbCZ4EDk_F_NOzIuwDDTANJZYPaHDwl_KXKxoLnkmd";
 
 (() => {
@@ -153,35 +157,52 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
     if (d.open) faqs.forEach((o) => { if (o !== d) o.open = false; });
   }));
 
-  /* Booking embed: loads when the section comes near the viewport */
-  const frame = $("#bookFrame");
-  $("#bookFallback").href = BOOKING_URL;
-  const embedUrl = (() => {
+  /* Booking: session cards open Google's booking page in a dark modal */
+  const toEmbed = (url) => {
     try {
-      const u = new URL(BOOKING_URL);
-      if (u.hostname.includes("calendly.com")) {
-        u.searchParams.set("embed_domain", location.hostname || "localhost");
-        u.searchParams.set("embed_type", "Inline");
-        u.searchParams.set("hide_gdpr_banner", "1");
-        u.searchParams.set("background_color", "ffffff");
-        u.searchParams.set("primary_color", "c8a35a");
-      }
-      if (u.hostname.includes("calendar.google.com") && !u.searchParams.has("gv")) {
-        u.searchParams.set("gv", "true");
-      }
+      const u = new URL(url);
+      if (u.hostname.includes("calendar.google.com") && !u.searchParams.has("gv")) u.searchParams.set("gv", "true");
       return u.toString();
-    } catch { return BOOKING_URL; }
-  })();
-  const loadBooking = () => {
-    const iframe = document.createElement("iframe");
-    iframe.src = embedUrl;
-    iframe.title = "Book a session";
-    iframe.loading = "lazy";
-    iframe.addEventListener("load", () => $(".book__placeholder", frame)?.remove());
-    frame.appendChild(iframe);
+    } catch { return url; }
   };
-  const bio = new IntersectionObserver((entries) => {
-    if (entries.some((e) => e.isIntersecting)) { loadBooking(); bio.disconnect(); }
-  }, { rootMargin: "600px 0px" });
-  bio.observe(frame);
+  const bookings = {
+    consult: {
+      label: "Free · 15 minutes",
+      title: "Free consultation call",
+      url: CONSULT_URL,
+      fallback: `https://wa.me/447914832059?text=${encodeURIComponent("Hi Tommy, I'd like to book a free 15-minute consultation.")}`,
+    },
+    session: { label: "In person", title: "1-1 S&C session", url: BOOKING_URL },
+  };
+  const modal = $("#bookModal");
+  const body = $("#modalBody");
+  let lastFocus = null;
+  const openBooking = (key) => {
+    const b = bookings[key];
+    if (!b.url) { window.open(b.fallback, "_blank", "noopener"); return; }
+    lastFocus = document.activeElement;
+    $("#modalLabel").textContent = b.label;
+    $("#modalTitle").textContent = b.title;
+    $("#modalExt").href = b.url;
+    body.classList.remove("is-loaded");
+    body.innerHTML = '<div class="modal__loading"><span class="spinner"></span>Loading available times…</div>';
+    const iframe = document.createElement("iframe");
+    iframe.src = toEmbed(b.url);
+    iframe.title = b.title;
+    iframe.addEventListener("load", () => body.classList.add("is-loaded"));
+    body.appendChild(iframe);
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add("is-open"));
+    document.body.style.overflow = "hidden";
+    $(".modal__close", modal).focus();
+  };
+  const closeBooking = () => {
+    modal.classList.remove("is-open");
+    document.body.style.overflow = "";
+    setTimeout(() => { modal.hidden = true; body.innerHTML = ""; }, reduceMotion ? 0 : 300);
+    if (lastFocus) lastFocus.focus();
+  };
+  $$("[data-book]").forEach((btn) => btn.addEventListener("click", () => openBooking(btn.dataset.book)));
+  $$("[data-close]", modal).forEach((el) => el.addEventListener("click", closeBooking));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) closeBooking(); });
 })();
