@@ -195,7 +195,7 @@ em { font-style: normal; color: var(--accent); }
 .option__meta { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; font-size: .85rem; color: var(--text); margin-bottom: 1.2rem; }
 .option__meta span { display: inline-flex; align-items: center; gap: .5rem; }
 .option__meta span::before { content: ""; width: 5px; height: 5px; background: var(--accent); transform: rotate(45deg); }
-.option > p:not(.option__meta) { color: var(--muted); font-size: .97rem; flex: 1; margin-bottom: 2rem; }
+.option > p:not(.option__meta):not(.option__note) { color: var(--muted); font-size: .97rem; flex: 1; margin-bottom: 2rem; }
 .option .btn { align-self: flex-start; }
 .option__note { margin: .9rem 0 0; font-size: .82rem; color: var(--muted); }
 
