@@ -59,6 +59,14 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
   }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
   $$(".reveal").forEach((el) => io.observe(el));
 
+  /* Results photo: only reveal once it has downloaded */
+  const champ = document.getElementById("champPhoto");
+  if (champ) {
+    const ready = () => champ.closest(".results__photo").classList.add("is-loaded");
+    if (champ.complete && champ.naturalWidth) ready();
+    else { champ.addEventListener("load", ready); champ.addEventListener("error", ready); }
+  }
+
   /* Hero watermark parallax */
   const mark = $(".hero__watermark");
   if (mark && !reduceMotion) {

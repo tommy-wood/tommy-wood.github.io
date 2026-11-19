@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -215,8 +215,11 @@
     <!-- RESULTS -->
     <section class="section section--alt" id="results">
       <div class="wrap results">
-        <figure class="results__photo reveal">
-          <img src="assets/champions-sm.jpg" srcset="assets/champions-sm.jpg 750w, assets/champions.jpg 1500w" sizes="(max-width: 860px) 100vw, 45vw" alt="Three athletes in the gym, two holding championship belts" loading="lazy" width="1500" height="2000">
+        <figure class="results__photo reveal" style="background-image:url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wAARCAAgABgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDZdgPzqD7TEZzCHXzQMlM84+lUryJtTtQqiMqTuTLdx9OlcsNavReuWSESjcHPTgdRn8KVwO5SRHGVII9Qc0Vi6JcEWK4t/JTcRt75oouBi6xJFDfXEcchUfdxkjtz+tYYkfc7E5Lg7vxrqdW02JzPOsXzNcOM5J4GP6k1zIh6ZzyWH5U73C1jX8Lky3nlMzHHzKAePf8ApRWn4XtkW+eRF62sR/Ejn9RRUsD/2Q==)">
+          <picture>
+            <source type="image/webp" srcset="assets/champions-600.webp 600w, assets/champions-900.webp 900w, assets/champions-1200.webp 1200w" sizes="(max-width: 960px) calc(100vw - 32px), 45vw">
+            <img src="assets/champions-900.jpg" alt="Three athletes in the gym, two holding championship belts" fetchpriority="low" decoding="async" width="900" height="1200" id="champPhoto">
+          </picture>
         </figure>
         <div class="results__copy reveal">
           <p class="eyebrow">Results</p>
@@ -438,7 +441,7 @@
 
   <a href="#book" class="float-cta" id="floatCta">Book a session</a>
 
-  <script src="testimonials.js?v=7" defer></script>
-  <script src="script.js?v=7" defer></script>
+  <script src="testimonials.js?v=8" defer></script>
+  <script src="script.js?v=8" defer></script>
 </body>
 </html>
