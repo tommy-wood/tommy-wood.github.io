@@ -31,11 +31,15 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
     const y = window.scrollY;
     nav.classList.toggle("is-scrolled", y > 30);
     const pastHero = y > hero.offsetHeight * 0.7;
-    const bookTop = book.getBoundingClientRect().top;
+    const br = book.getBoundingClientRect();
+    const bookOnScreen = br.top < window.innerHeight * 0.85 && br.bottom > window.innerHeight * 0.15;
     const tm = document.getElementById("timer");
     const tr = tm ? tm.getBoundingClientRect() : null;
     const timerOnScreen = tr && tr.top < window.innerHeight && tr.bottom > 0;
-    floatCta.classList.toggle("is-visible", pastHero && !timerOnScreen && bookTop > window.innerHeight * 0.6);
+    const fc = document.querySelector(".faq__cta");
+    const fr = fc ? fc.getBoundingClientRect() : null;
+    const faqCtaOnScreen = fr && fr.top < window.innerHeight && fr.bottom > 0;
+    floatCta.classList.toggle("is-visible", pastHero && !timerOnScreen && !bookOnScreen && !faqCtaOnScreen);
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();

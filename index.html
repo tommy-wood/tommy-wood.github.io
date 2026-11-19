@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -36,6 +36,7 @@
         <a href="#coaching">Coaching</a>
         <a href="#results">Results</a>
         <a href="#about">About</a>
+        <a href="#timer">Timer</a>
         <a href="#faq">FAQ</a>
         <a href="#book" class="btn btn--sm">Book a session</a>
       </nav>
@@ -257,49 +258,6 @@
       </div>
     </section>
 
-    <!-- ROUND TIMER -->
-    <section class="section" id="timer">
-      <div class="wrap timer-wrap">
-        <div class="timer-intro reveal">
-          <p class="eyebrow">Round timer</p>
-          <h2>Work the rounds.</h2>
-          <p class="section__lead">Free for pads, bag work and conditioning. Keep this page open on your phone.</p>
-          <div class="chips presets" id="presets" role="group" aria-label="Timer presets">
-            <button type="button" class="chip" data-w="180" data-r="60" data-n="12">Boxing</button>
-            <button type="button" class="chip" data-w="180" data-r="60" data-n="3">Amateur</button>
-            <button type="button" class="chip" data-w="300" data-r="60" data-n="5">MMA</button>
-            <button type="button" class="chip" data-w="180" data-r="120" data-n="5">Muay Thai</button>
-            <button type="button" class="chip" data-w="30" data-r="30" data-n="10">Intervals</button>
-          </div>
-        </div>
-        <div class="timer reveal" id="roundTimer" data-phase="idle">
-          <div class="timer__dial">
-            <svg viewBox="0 0 320 320" aria-hidden="true">
-              <circle class="timer__track" cx="160" cy="160" r="148"/>
-              <circle class="timer__ring" id="timerRing" cx="160" cy="160" r="148"/>
-            </svg>
-            <div class="timer__readout">
-              <p class="timer__phase" id="timerPhase">Ready</p>
-              <p class="timer__time" id="timerTime" role="timer" aria-live="off">3:00</p>
-              <p class="timer__round" id="timerRound">Round 1 / 12</p>
-            </div>
-          </div>
-          <div class="timer__settings">
-            <div class="stepper" data-key="n"><span>Rounds</span><button type="button" data-d="-1" aria-label="Fewer rounds">−</button><output id="setN">12</output><button type="button" data-d="1" aria-label="More rounds">+</button></div>
-            <div class="stepper" data-key="w"><span>Work</span><button type="button" data-d="-15" aria-label="Shorter work">−</button><output id="setW">3:00</output><button type="button" data-d="15" aria-label="Longer work">+</button></div>
-            <div class="stepper" data-key="r"><span>Rest</span><button type="button" data-d="-15" aria-label="Shorter rest">−</button><output id="setR">1:00</output><button type="button" data-d="15" aria-label="Longer rest">+</button></div>
-          </div>
-          <div class="timer__controls">
-            <button type="button" class="btn" id="timerStart">Start</button>
-            <button type="button" class="btn btn--ghost" id="timerReset">Reset</button>
-            <button type="button" class="timer__sound" id="timerSound" aria-pressed="true" aria-label="Sound on">
-              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4Z"/><path class="wave" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="mute" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="m16 9 5 6m0-6-5 6"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ABOUT -->
     <section class="section" id="about">
       <div class="wrap about">
@@ -319,44 +277,8 @@
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="section section--alt" id="faq">
-      <div class="wrap wrap--narrow">
-        <div class="section__head reveal">
-          <p class="eyebrow">FAQ</p>
-          <h2>Questions</h2>
-        </div>
-        <div class="faq reveal">
-          <details>
-            <summary>Will lifting make me slow or bulky?</summary>
-            <p>No. Well-planned strength training makes athletes faster and more powerful. We manage training volume and nutrition so you stay in your weight class.</p>
-          </details>
-          <details>
-            <summary>I already train my sport most days. How does this fit in?</summary>
-            <p>Your sport comes first. We plan S&amp;C around your skills and sparring sessions, usually two or three sessions a week, and reduce the load in fight week.</p>
-          </details>
-          <details>
-            <summary>Do I need lifting experience?</summary>
-            <p>No. Everyone starts with an assessment, and beginners learn the key lifts properly before we add heavy weight.</p>
-          </details>
-          <details>
-            <summary>How does online coaching work?</summary>
-            <p>Your programme is delivered to an app. You log sessions and send videos of key lifts, and I review everything and update the plan each week.</p>
-          </details>
-          <details>
-            <summary>Do you work with non-combat athletes?</summary>
-            <p>Yes. Rugby, football and other contact or field sports have very similar needs, and I'm happy to discuss any sport.</p>
-          </details>
-          <details>
-            <summary>How much does it cost?</summary>
-            <p>It depends on how you train with me and how often. Book a free 15-minute consultation and I'll recommend the right option and give you prices.</p>
-          </details>
-        </div>
-      </div>
-    </section>
-
     <!-- BOOK -->
-    <section class="section book" id="book">
+    <section class="section section--alt book" id="book">
       <div class="wrap">
         <div class="section__head section__head--center reveal">
           <p class="eyebrow">Get started</p>
@@ -403,6 +325,89 @@
         </div>
       </div>
     </section>
+
+    <!-- ROUND TIMER -->
+    <section class="section" id="timer">
+      <div class="wrap timer-wrap">
+        <div class="timer-intro reveal">
+          <p class="eyebrow">Round timer</p>
+          <h2>Work the rounds.</h2>
+          <p class="section__lead">Free for pads, bag work and conditioning. Keep this page open on your phone.</p>
+          <div class="chips presets" id="presets" role="group" aria-label="Timer presets">
+            <button type="button" class="chip" data-w="180" data-r="60" data-n="12">Boxing</button>
+            <button type="button" class="chip" data-w="180" data-r="60" data-n="3">Amateur</button>
+            <button type="button" class="chip" data-w="300" data-r="60" data-n="5">MMA</button>
+            <button type="button" class="chip" data-w="180" data-r="120" data-n="5">Muay Thai</button>
+            <button type="button" class="chip" data-w="30" data-r="30" data-n="10">Intervals</button>
+          </div>
+        </div>
+        <div class="timer reveal" id="roundTimer" data-phase="idle">
+          <div class="timer__dial">
+            <svg viewBox="0 0 320 320" aria-hidden="true">
+              <circle class="timer__track" cx="160" cy="160" r="148"/>
+              <circle class="timer__ring" id="timerRing" cx="160" cy="160" r="148"/>
+            </svg>
+            <div class="timer__readout">
+              <p class="timer__phase" id="timerPhase">Ready</p>
+              <p class="timer__time" id="timerTime" role="timer" aria-live="off">3:00</p>
+              <p class="timer__round" id="timerRound">Round 1 / 12</p>
+            </div>
+          </div>
+          <div class="timer__settings">
+            <div class="stepper" data-key="n"><span>Rounds</span><button type="button" data-d="-1" aria-label="Fewer rounds">−</button><output id="setN">12</output><button type="button" data-d="1" aria-label="More rounds">+</button></div>
+            <div class="stepper" data-key="w"><span>Work</span><button type="button" data-d="-15" aria-label="Shorter work">−</button><output id="setW">3:00</output><button type="button" data-d="15" aria-label="Longer work">+</button></div>
+            <div class="stepper" data-key="r"><span>Rest</span><button type="button" data-d="-15" aria-label="Shorter rest">−</button><output id="setR">1:00</output><button type="button" data-d="15" aria-label="Longer rest">+</button></div>
+          </div>
+          <div class="timer__controls">
+            <button type="button" class="btn" id="timerStart">Start</button>
+            <button type="button" class="btn btn--ghost" id="timerReset">Reset</button>
+            <button type="button" class="timer__sound" id="timerSound" aria-pressed="true" aria-label="Sound on">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M4 9v6h4l5 4V5L8 9H4Z"/><path class="wave" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="mute" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="m16 9 5 6m0-6-5 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section--alt" id="faq">
+      <div class="wrap wrap--narrow">
+        <div class="section__head reveal">
+          <p class="eyebrow">FAQ</p>
+          <h2>Questions</h2>
+        </div>
+        <div class="faq reveal">
+          <details>
+            <summary>Will lifting make me slow or bulky?</summary>
+            <p>No. Well-planned strength training makes athletes faster and more powerful. We manage training volume and nutrition so you stay in your weight class.</p>
+          </details>
+          <details>
+            <summary>I already train my sport most days. How does this fit in?</summary>
+            <p>Your sport comes first. We plan S&amp;C around your skills and sparring sessions, usually two or three sessions a week, and reduce the load in fight week.</p>
+          </details>
+          <details>
+            <summary>Do I need lifting experience?</summary>
+            <p>No. Everyone starts with an assessment, and beginners learn the key lifts properly before we add heavy weight.</p>
+          </details>
+          <details>
+            <summary>How does online coaching work?</summary>
+            <p>Your programme is delivered to an app. You log sessions and send videos of key lifts, and I review everything and update the plan each week.</p>
+          </details>
+          <details>
+            <summary>Do you work with non-combat athletes?</summary>
+            <p>Yes. Rugby, football and other contact or field sports have very similar needs, and I'm happy to discuss any sport.</p>
+          </details>
+          <details>
+            <summary>How much does it cost?</summary>
+            <p>It depends on how you train with me and how often. Book a free 15-minute consultation and I'll recommend the right option and give you prices.</p>
+          </details>
+        </div>
+        <div class="faq__cta reveal">
+          <p>Still unsure?</p>
+          <a href="#book" class="btn">Book a free call</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
@@ -411,9 +416,9 @@
       <nav class="footer__links" aria-label="Footer">
         <a href="#method">Method</a>
         <a href="#coaching">Coaching</a>
+        <a href="#book">Book</a>
         <a href="#timer">Round timer</a>
         <a href="#faq">FAQ</a>
-        <a href="#book">Book</a>
         <a href="https://www.instagram.com/tommy.woodx" target="_blank" rel="noopener">Instagram</a>
       </nav>
       <p class="footer__copy">© <span id="year"></span> Woodward Athletic Performance</p>
@@ -441,7 +446,7 @@
 
   <a href="#book" class="float-cta" id="floatCta">Book a session</a>
 
-  <script src="testimonials.js?v=8" defer></script>
-  <script src="script.js?v=8" defer></script>
+  <script src="testimonials.js?v=9" defer></script>
+  <script src="script.js?v=9" defer></script>
 </body>
 </html>

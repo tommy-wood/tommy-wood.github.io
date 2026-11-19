@@ -366,6 +366,9 @@ em { font-style: normal; color: var(--accent); }
   .tst__nav { display: none; }
 }
 
+.faq__cta { display: flex; align-items: center; justify-content: center; gap: 1.4rem; flex-wrap: wrap; margin-top: 3.5rem; }
+.faq__cta p { margin: 0; color: var(--muted); }
+
 /* Responsive */
 @media (max-width: 960px) {
   .steps { grid-template-columns: 1fr 1fr; }
