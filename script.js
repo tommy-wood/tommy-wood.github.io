@@ -32,7 +32,10 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
     nav.classList.toggle("is-scrolled", y > 30);
     const pastHero = y > hero.offsetHeight * 0.7;
     const bookTop = book.getBoundingClientRect().top;
-    floatCta.classList.toggle("is-visible", pastHero && bookTop > window.innerHeight * 0.6);
+    const tm = document.getElementById("timer");
+    const tr = tm ? tm.getBoundingClientRect() : null;
+    const timerOnScreen = tr && tr.top < window.innerHeight && tr.bottom > 0;
+    floatCta.classList.toggle("is-visible", pastHero && !timerOnScreen && bookTop > window.innerHeight * 0.6);
   };
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
@@ -139,7 +142,7 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
       </div>`;
     $("[data-tab]", out).addEventListener("click", () => activate(tabs[plan.tab]));
   };
-  $$(".chips").forEach((group) => {
+  $$(".finder .chips").forEach((group) => {
     const chips = $$(".chip", group);
     chips.forEach((c) => c.setAttribute("aria-pressed", "false"));
     group.addEventListener("click", (e) => {
@@ -205,4 +208,215 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
   $$("[data-book]").forEach((btn) => btn.addEventListener("click", () => openBooking(btn.dataset.book)));
   $$("[data-close]", modal).forEach((el) => el.addEventListener("click", closeBooking));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !modal.hidden) closeBooking(); });
+
+  /* Scroll progress bar + method line */
+  const bar2 = $("#progressBar");
+  const steps = $(".steps");
+  const stepEls = $$(".step");
+  let rafP = false;
+  const updateProgress = () => {
+    rafP = false;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    bar2.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+    const r = steps.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
+    steps.style.setProperty("--p", p.toFixed(3));
+    stepEls.forEach((s, i) => s.classList.toggle("is-lit", p >= (i + 0.5) / stepEls.length));
+  };
+  window.addEventListener("scroll", () => { if (!rafP) { rafP = true; requestAnimationFrame(updateProgress); } }, { passive: true });
+  window.addEventListener("resize", updateProgress);
+  updateProgress();
+
+  /* Round timer */
+  const T = {
+    el: $("#roundTimer"), ring: $("#timerRing"), phaseEl: $("#timerPhase"), timeEl: $("#timerTime"),
+    roundEl: $("#timerRound"), startBtn: $("#timerStart"), resetBtn: $("#timerReset"), soundBtn: $("#timerSound"),
+  };
+  const PREP = 5;
+  const C = 2 * Math.PI * 148;
+  T.ring.style.strokeDasharray = C;
+  const cfg = { n: 12, w: 180, r: 60 };
+  try { Object.assign(cfg, JSON.parse(localStorage.getItem("wapTimer")) || {}); } catch {}
+  const st = { phase: "idle", round: 1, endAt: 0, remaining: 0, total: 0, running: false, warned: false, sound: true };
+  const fmt = (s) => { s = Math.max(0, Math.ceil(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+
+  /* Sounds (Web Audio, no files needed) */
+  let ac = null;
+  const audio = () => { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === "suspended") ac.resume(); } catch {} return ac; };
+  const bell = (times = 1) => {
+    if (!st.sound || !audio()) return;
+    for (let k = 0; k < times; k++) {
+      const t0 = ac.currentTime + k * 0.32;
+      [[523, 0.5], [1047, 0.32], [1569, 0.18], [2093, 0.1], [2637, 0.06]].forEach(([f, g]) => {
+        const o = ac.createOscillator(), v = ac.createGain();
+        o.type = "sine"; o.frequency.value = f * 1.003;
+        v.gain.setValueAtTime(0.0001, t0);
+        v.gain.exponentialRampToValueAtTime(g * 0.6, t0 + 0.008);
+        v.gain.exponentialRampToValueAtTime(0.0001, t0 + (times > 1 ? 0.9 : 2.2));
+        o.connect(v).connect(ac.destination); o.start(t0); o.stop(t0 + 2.3);
+      });
+    }
+  };
+  const clap = () => {
+    if (!st.sound || !audio()) return;
+    [0, 0.16].forEach((d) => {
+      const t0 = ac.currentTime + d;
+      const len = Math.floor(ac.sampleRate * 0.06);
+      const buf = ac.createBuffer(1, len, ac.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+      const src = ac.createBufferSource(), f = ac.createBiquadFilter(), v = ac.createGain();
+      src.buffer = buf; f.type = "bandpass"; f.frequency.value = 1800; f.Q.value = 1.2; v.gain.value = 0.9;
+      src.connect(f).connect(v).connect(ac.destination); src.start(t0);
+    });
+  };
+  const beep = () => {
+    if (!st.sound || !audio()) return;
+    const o = ac.createOscillator(), v = ac.createGain(), t0 = ac.currentTime;
+    o.frequency.value = 880; v.gain.setValueAtTime(0.25, t0); v.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.15);
+    o.connect(v).connect(ac.destination); o.start(t0); o.stop(t0 + 0.16);
+  };
+
+  /* Keep the screen awake while running */
+  let lock = null;
+  const wake = async (on) => {
+    try {
+      if (on && "wakeLock" in navigator && !lock) { lock = await navigator.wakeLock.request("screen"); lock.addEventListener("release", () => { lock = null; }); }
+      if (!on && lock) { await lock.release(); lock = null; }
+    } catch {}
+  };
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && st.running) wake(true); });
+
+  const labels = { idle: "Ready", prep: "Get ready", work: "Work", rest: "Rest", done: "Done" };
+  const renderTimer = () => {
+    const rem = st.running ? (st.endAt - performance.now()) / 1000 : st.remaining;
+    const showTime = st.phase === "idle" ? cfg.w : st.phase === "done" ? 0 : rem;
+    T.timeEl.textContent = fmt(showTime);
+    T.phaseEl.textContent = labels[st.phase];
+    T.roundEl.textContent = st.phase === "done" ? `${cfg.n} rounds complete` : `Round ${st.round} / ${cfg.n}`;
+    T.el.dataset.phase = st.phase;
+    const frac = st.phase === "idle" ? 1 : st.phase === "done" ? 0 : Math.max(0, rem / (st.total || 1));
+    T.ring.style.strokeDashoffset = (C * (1 - frac)).toFixed(1);
+    T.el.classList.toggle("is-warn", st.running && st.phase === "work" && rem <= 10 && cfg.w > 20);
+    T.el.classList.toggle("is-running", st.running || st.phase !== "idle");
+    $("#setN").textContent = cfg.n; $("#setW").textContent = fmt(cfg.w); $("#setR").textContent = fmt(cfg.r);
+    document.title = st.running && st.phase !== "done" ? `${fmt(rem)} · ${labels[st.phase]}` : baseTitle;
+  };
+  const baseTitle = document.title;
+  const enter = (phase, secs) => {
+    st.phase = phase; st.total = secs; st.remaining = secs; st.warned = false;
+    st.endAt = performance.now() + secs * 1000;
+  };
+  const advance = () => {
+    if (st.phase === "prep") { enter("work", cfg.w); bell(1); }
+    else if (st.phase === "work") {
+      if (st.round >= cfg.n) { st.phase = "done"; st.running = false; bell(3); wake(false); T.startBtn.textContent = "Start"; }
+      else { bell(1); enter("rest", cfg.r); }
+    } else if (st.phase === "rest") { st.round++; enter("work", cfg.w); bell(1); }
+  };
+  let lastBeep = -1;
+  const tick = () => {
+    if (!st.running) return;
+    const rem = (st.endAt - performance.now()) / 1000;
+    if (st.phase === "work" && !st.warned && rem <= 10 && cfg.w > 20) { st.warned = true; clap(); }
+    if ((st.phase === "prep" || st.phase === "rest") && rem <= 3 && rem > 0) {
+      const s = Math.ceil(rem); if (s !== lastBeep) { lastBeep = s; beep(); }
+    }
+    if (rem <= 0) advance();
+    renderTimer();
+  };
+  setInterval(tick, 100);
+
+  const start = () => {
+    audio();
+    if (st.phase === "idle" || st.phase === "done") { st.round = 1; enter("prep", PREP); lastBeep = -1; }
+    else st.endAt = performance.now() + st.remaining * 1000;
+    st.running = true; T.startBtn.textContent = "Pause"; wake(true); renderTimer();
+  };
+  const pause = () => {
+    st.remaining = Math.max(0, (st.endAt - performance.now()) / 1000);
+    st.running = false; T.startBtn.textContent = "Resume"; wake(false); renderTimer();
+  };
+  const reset = () => { st.running = false; st.phase = "idle"; st.round = 1; T.startBtn.textContent = "Start"; wake(false); renderTimer(); };
+  T.startBtn.addEventListener("click", () => (st.running ? pause() : start()));
+  T.resetBtn.addEventListener("click", reset);
+  T.soundBtn.addEventListener("click", () => {
+    st.sound = !st.sound;
+    T.soundBtn.setAttribute("aria-pressed", String(st.sound));
+    T.soundBtn.setAttribute("aria-label", st.sound ? "Sound on" : "Sound off");
+  });
+
+  const save = () => { try { localStorage.setItem("wapTimer", JSON.stringify(cfg)); } catch {} };
+  const presetBtns = $$("#presets .chip");
+  const markPreset = () => presetBtns.forEach((b) => b.setAttribute("aria-pressed",
+    String(+b.dataset.w === cfg.w && +b.dataset.r === cfg.r && +b.dataset.n === cfg.n)));
+  presetBtns.forEach((b) => b.addEventListener("click", () => {
+    cfg.w = +b.dataset.w; cfg.r = +b.dataset.r; cfg.n = +b.dataset.n;
+    reset(); save(); markPreset();
+  }));
+  $$(".stepper").forEach((s) => s.addEventListener("click", (e) => {
+    const btn = e.target.closest("button"); if (!btn) return;
+    const k = s.dataset.key, d = +btn.dataset.d;
+    const lim = { n: [1, 30], w: [15, 600], r: [0, 300] }[k];
+    cfg[k] = Math.min(lim[1], Math.max(lim[0], cfg[k] + d));
+    save(); markPreset(); renderTimer();
+  }));
+  markPreset();
+  renderTimer();
+
+  /* Testimonials carousel */
+  const tSec = $("#athletes");
+  const tData = Array.isArray(window.TESTIMONIALS) ? window.TESTIMONIALS.filter((t) => t && t.quote) : [];
+  if (tSec && tData.length) {
+    const esc = (v) => String(v || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const track = $("#tstTrack");
+    track.innerHTML = tData.map((t) => `
+      <figure class="tcard${t.photo ? " tcard--photo" : ""}">
+        ${t.photo ? `<div class="tcard__photo"><img src="${esc(t.photo)}" alt="${esc(t.name)}" loading="lazy"></div>` : ""}
+        <figcaption class="tcard__body">
+          <span class="tcard__mark" aria-hidden="true">\u201C</span>
+          <blockquote>${esc(t.quote)}</blockquote>
+          <p class="tcard__name">${esc(t.name)}</p>
+          ${t.detail ? `<p class="tcard__detail">${esc(t.detail)}</p>` : ""}
+        </figcaption>
+      </figure>`).join("");
+    tSec.hidden = false;
+    const cards = $$(".tcard", track);
+    const dots = $("#tstDots");
+    dots.innerHTML = cards.map(() => "<span></span>").join("");
+    const prev = $("#tstPrev"), next = $("#tstNext");
+    const step = () => cards[0].getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0);
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      prev.disabled = track.scrollLeft <= 4;
+      next.disabled = track.scrollLeft >= max - 4;
+      const idx = Math.round(track.scrollLeft / step());
+      $$("span", dots).forEach((d, i) => d.classList.toggle("is-on", i === Math.min(idx, cards.length - 1)));
+      dots.style.display = max > 4 ? "" : "none";
+      $(".tst__nav").style.visibility = max > 4 ? "" : "hidden";
+    };
+    prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
+    next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
+    track.addEventListener("scroll", () => requestAnimationFrame(sync), { passive: true });
+    window.addEventListener("resize", sync);
+    track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); next.click(); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); prev.click(); }
+    });
+    /* drag to scroll with a mouse */
+    let down = false, sx = 0, sl = 0, moved = false;
+    track.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") return; down = true; moved = false; sx = e.clientX; sl = track.scrollLeft; });
+    window.addEventListener("pointermove", (e) => {
+      if (!down) return;
+      const dx = e.clientX - sx;
+      if (Math.abs(dx) > 4) { moved = true; track.classList.add("is-drag"); }
+      track.scrollLeft = sl - dx;
+    });
+    window.addEventListener("pointerup", () => {
+      if (!down) return; down = false;
+      if (moved) { track.classList.remove("is-drag"); const i = Math.round(track.scrollLeft / step()); track.scrollTo({ left: i * step(), behavior: "smooth" }); }
+    });
+    sync();
+  }
 })();
