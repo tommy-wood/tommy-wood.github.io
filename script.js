@@ -1,11 +1,12 @@
 /* =========================================================
    BOOKING LINK: change this one line to switch providers.
-   - Calendly (current):  https://calendly.com/tommywoodpt/1to1session
-   - Google Calendar appointment schedule: paste the booking
-     page link from Google Calendar (calendar.app.google/...
-     or calendar.google.com/calendar/appointments/schedules/...)
+   - Google Calendar appointment schedule (current). Short link:
+     https://calendar.app.google/oo1CNAdE3sxf5aAE6
+     Use the full calendar.google.com/.../schedules/... address
+     so the embed works (open the short link and copy the URL).
+   - Calendly also works: https://calendly.com/tommywoodpt/1to1session
    ========================================================= */
-const BOOKING_URL = "https://calendly.com/tommywoodpt/1to1session";
+const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0qwG0DC8gNyS6GFDqcdaDojAPX5_0mNBzbCZ4EDk_F_NOzIuwDDTANJZYPaHDwl_KXKxoLnkmd";
 
 (() => {
   const $ = (s, el = document) => el.querySelector(s);
