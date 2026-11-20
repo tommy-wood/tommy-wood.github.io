@@ -388,7 +388,8 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
           <div class="ba__img"><img src="${esc(base)}-800.webp" srcset="${esc(base)}-500.webp 500w, ${esc(base)}-800.webp 800w" sizes="(max-width: 860px) 45vw, 25vw" alt="${esc(alt)}" loading="lazy" decoding="async"><span class="ba__tag">${label}</span></div>`;
     const who = (t) => `
           ${t.name ? `<p class="tcard__name">${esc(t.name)}</p>` : ""}
-          ${t.detail ? `<p class="tcard__detail">${esc(t.detail)}</p>` : ""}`;
+          ${t.detail ? `<p class="tcard__detail">${esc(t.detail)}</p>` : ""}
+          ${Array.isArray(t.titles) && t.titles.length ? `<ul class="tcard__titles">${t.titles.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}`;
     track.innerHTML = tData.map((t) => {
       if (t.before && t.after) {
         const n = t.name || "Athlete";

@@ -418,6 +418,12 @@ em { font-style: normal; color: var(--accent); }
 .tcard__more blockquote { margin: 1.2rem 0 0; color: var(--muted); font-size: .98rem; }
 @media (max-width: 860px) { .tcard--ba { grid-template-columns: 1fr; } .tcard--ba .ba__img img { object-position: center 30%; } }
 
+.ba__img img { position: absolute; inset: 0; }
+@media (min-width: 861px) { .tst__track--one .ba { align-self: start; } .tst__track--one .ba__img { aspect-ratio: auto; height: clamp(380px, 33vw, 480px); } }
+.tcard__titles { list-style: none; margin: 1.1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+.tcard__titles li { font-size: .78rem; line-height: 1.3; padding: .5em .8em; border: 1px solid rgba(200, 163, 90, .35); border-radius: 2px; color: var(--text); }
+.tcard__titles li::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: .55em; vertical-align: .1em; }
+
 /* Responsive */
 @media (max-width: 960px) {
   .steps { grid-template-columns: 1fr 1fr; }
