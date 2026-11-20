@@ -383,16 +383,38 @@ const BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules
   if (tSec && tData.length) {
     const esc = (v) => String(v || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const track = $("#tstTrack");
-    track.innerHTML = tData.map((t) => `
+    const paras = (q) => String(q).split(/\n\s*\n/).map((p) => `<p>${esc(p.trim())}</p>`).join("");
+    const pic = (base, label, alt) => `
+          <div class="ba__img"><img src="${esc(base)}-800.webp" srcset="${esc(base)}-500.webp 500w, ${esc(base)}-800.webp 800w" sizes="(max-width: 860px) 45vw, 25vw" alt="${esc(alt)}" loading="lazy" decoding="async"><span class="ba__tag">${label}</span></div>`;
+    const who = (t) => `
+          ${t.name ? `<p class="tcard__name">${esc(t.name)}</p>` : ""}
+          ${t.detail ? `<p class="tcard__detail">${esc(t.detail)}</p>` : ""}`;
+    track.innerHTML = tData.map((t) => {
+      if (t.before && t.after) {
+        const n = t.name || "Athlete";
+        return `
+      <figure class="tcard tcard--ba">
+        <div class="ba">${pic(t.before, "Before", n + " before training with Tommy")}${pic(t.after, "Now", n + " now")}</div>
+        <figcaption class="tcard__body">
+          <span class="tcard__mark" aria-hidden="true">“</span>
+          ${t.pull ? `<p class="tcard__pull">${esc(t.pull)}</p>` : ""}
+          <details class="tcard__more"${t.pull ? "" : " open"}>
+            <summary>Read the full review</summary>
+            <blockquote>${paras(t.quote)}</blockquote>
+          </details>${who(t)}
+        </figcaption>
+      </figure>`;
+      }
+      return `
       <figure class="tcard${t.photo ? " tcard--photo" : ""}">
         ${t.photo ? `<div class="tcard__photo"><img src="${esc(t.photo)}" alt="${esc(t.name)}" loading="lazy"></div>` : ""}
         <figcaption class="tcard__body">
-          <span class="tcard__mark" aria-hidden="true">\u201C</span>
-          <blockquote>${esc(t.quote)}</blockquote>
-          <p class="tcard__name">${esc(t.name)}</p>
-          ${t.detail ? `<p class="tcard__detail">${esc(t.detail)}</p>` : ""}
+          <span class="tcard__mark" aria-hidden="true">“</span>
+          <blockquote>${paras(t.quote)}</blockquote>${who(t)}
         </figcaption>
-      </figure>`).join("");
+      </figure>`;
+    }).join("");
+    if (tData.length === 1) track.classList.add("tst__track--one");
     tSec.hidden = false;
     const cards = $$(".tcard", track);
     const dots = $("#tstDots");
